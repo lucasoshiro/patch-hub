@@ -92,7 +92,7 @@ impl App {
                 possible_mailing_lists: mailing_lists,
                 highlighted_list_index: 0,
                 mailing_lists_path: config.mailing_lists_path().to_string(),
-                lore_api_client: lore_api_client.clone(),
+                lore_api_client: Box::new(lore_api_client.clone()),
             },
             latest_patchsets: None,
             details_actions: None,

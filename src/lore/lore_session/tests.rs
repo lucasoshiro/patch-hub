@@ -1,35 +1,9 @@
-use mockall::mock;
-
 use io::Read;
 use std::fs;
 
-use crate::lore::patch::Author;
+use crate::lore::{lore_api_client::MockBlockingLoreAPIClient, patch::Author};
 
 use super::*;
-
-mock! {
-    BlockingLoreAPIClient {}
-    impl PatchFeedRequest for BlockingLoreAPIClient {
-        fn request_patch_feed(
-                    &self,
-                    target_list: &str,
-                    min_index: usize,
-                ) -> Result<String, ClientError>;
-    }
-    impl AvailableListsRequest for BlockingLoreAPIClient {
-        fn request_available_lists(
-            &self,
-            min_index: usize,
-        ) -> Result<String, ClientError>;
-    }
-    impl PatchHTMLRequest for BlockingLoreAPIClient {
-        fn request_patch_html(
-            &self,
-            _target_list: &str,
-            message_id: &str,
-        ) -> Result<String, ClientError>;
-    }
-}
 
 #[test]
 fn can_initialize_fresh_lore_session() {

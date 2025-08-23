@@ -1,7 +1,7 @@
 use color_eyre::eyre::bail;
 
 use crate::lore::{
-    lore_api_client::BlockingLoreAPIClient, lore_session, mailing_list::MailingList,
+    lore_api_client::AvailableListsRequest, lore_session, mailing_list::MailingList,
 };
 
 pub struct MailingListSelection {
@@ -10,12 +10,12 @@ pub struct MailingListSelection {
     pub possible_mailing_lists: Vec<MailingList>,
     pub highlighted_list_index: usize,
     pub mailing_lists_path: String,
-    pub lore_api_client: BlockingLoreAPIClient,
+    pub lore_api_client: Box<dyn AvailableListsRequest>,
 }
 
 impl MailingListSelection {
     pub fn refresh_available_mailing_lists(&mut self) -> color_eyre::Result<()> {
-        match lore_session::fetch_available_lists(&self.lore_api_client) {
+        match lore_session::fetch_available_lists(&*self.lore_api_client) {
             Ok(available_mailing_lists) => {
                 self.mailing_lists = available_mailing_lists;
             }
@@ -49,13 +49,12 @@ impl MailingListSelection {
     }
 
     fn process_possible_mailing_lists(&mut self) {
-        let mut possible_mailing_lists: Vec<MailingList> = Vec::new();
-
-        for mailing_list in &self.mailing_lists {
-            if mailing_list.name().starts_with(&self.target_list) {
-                possible_mailing_lists.push(mailing_list.clone());
-            }
-        }
+        let possible_mailing_lists = self
+            .mailing_lists
+            .iter()
+            .filter(|mailing_list| mailing_list.name().starts_with(&self.target_list))
+            .cloned()
+            .collect::<Vec<_>>();
 
         self.possible_mailing_lists = possible_mailing_lists;
         self.highlighted_list_index = 0;

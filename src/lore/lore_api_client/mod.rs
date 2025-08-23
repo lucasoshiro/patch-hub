@@ -127,3 +127,27 @@ impl PatchHTMLRequest for BlockingLoreAPIClient {
         Ok(body)
     }
 }
+
+mockall::mock! {
+    pub BlockingLoreAPIClient {}
+    impl PatchFeedRequest for BlockingLoreAPIClient {
+        fn request_patch_feed(
+                    &self,
+                    target_list: &str,
+                    min_index: usize,
+                ) -> Result<String, ClientError>;
+    }
+    impl AvailableListsRequest for BlockingLoreAPIClient {
+        fn request_available_lists(
+            &self,
+            min_index: usize,
+        ) -> Result<String, ClientError>;
+    }
+    impl PatchHTMLRequest for BlockingLoreAPIClient {
+        fn request_patch_html(
+            &self,
+            _target_list: &str,
+            message_id: &str,
+        ) -> Result<String, ClientError>;
+    }
+}

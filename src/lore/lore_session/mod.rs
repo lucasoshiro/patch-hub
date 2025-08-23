@@ -320,10 +320,9 @@ pub fn load_bookmarked_patchsets(filepath: &str) -> io::Result<Vec<Patch>> {
     Ok(bookmarked_patchesets)
 }
 
-pub fn fetch_available_lists<T>(lore_api_client: &T) -> Result<Vec<MailingList>, LoreSessionError>
-where
-    T: AvailableListsRequest,
-{
+pub fn fetch_available_lists(
+    lore_api_client: &dyn AvailableListsRequest,
+) -> Result<Vec<MailingList>, LoreSessionError> {
     let mut available_lists: Vec<MailingList> = Vec::new();
     let mut min_index = 0;
 
