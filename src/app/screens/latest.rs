@@ -2,7 +2,7 @@ use color_eyre::eyre::bail;
 use derive_getters::Getters;
 
 use crate::lore::{
-    lore_api_client::{BlockingLoreAPIClient, ClientError},
+    lore_api_client::{ClientError, PatchFeedRequest},
     lore_session::{LoreSession, LoreSessionError},
     patch::Patch,
 };
@@ -10,7 +10,7 @@ use crate::lore::{
 #[derive(Getters)]
 pub struct LatestPatchsets {
     lore_session: LoreSession,
-    lore_api_client: BlockingLoreAPIClient,
+    lore_api_client: Box<dyn PatchFeedRequest>,
     target_list: String,
     page_number: usize,
     patchset_index: usize,
@@ -21,7 +21,7 @@ impl LatestPatchsets {
     pub fn new(
         target_list: String,
         page_size: usize,
-        lore_api_client: BlockingLoreAPIClient,
+        lore_api_client: Box<dyn PatchFeedRequest>,
     ) -> LatestPatchsets {
         LatestPatchsets {
             lore_session: LoreSession::new(target_list.clone()),
@@ -35,7 +35,7 @@ impl LatestPatchsets {
 
     pub fn fetch_current_page(&mut self) -> color_eyre::Result<()> {
         if let Err(lore_session_error) = self.lore_session.process_n_representative_patches(
-            &self.lore_api_client,
+            self.lore_api_client.as_ref(),
             self.page_size * self.page_number,
         ) {
             match lore_session_error {

@@ -120,7 +120,7 @@ impl App {
         self.latest_patchsets = Some(LatestPatchsets::new(
             target_list,
             self.config.page_size(),
-            self.lore_api_client.clone(),
+            Box::new(self.lore_api_client.clone()),
         ));
     }
 

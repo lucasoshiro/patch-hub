@@ -1,7 +1,10 @@
 use io::Read;
 use std::fs;
 
-use crate::lore::{lore_api_client::MockBlockingLoreAPIClient, patch::Author};
+use crate::lore::{
+    lore_api_client::{MockBlockingLoreAPIClient, MockPatchFeedRequest},
+    patch::Author,
+};
 
 use super::*;
 
@@ -20,7 +23,7 @@ fn should_process_one_representative_patch() {
     let src_path = "test_samples/lore_session/process_representative_patch/patch_feed_sample_1.xml";
     let target_list = "some-list";
 
-    let mut lore_api_client = MockBlockingLoreAPIClient::new();
+    let mut lore_api_client = MockPatchFeedRequest::new();
 
     lore_api_client
         .expect_request_patch_feed()
@@ -84,7 +87,7 @@ fn should_process_multiple_representative_patches() {
     let src_path = "test_samples/lore_session/process_representative_patch/patch_feed_sample_2.xml";
     let target_list = "some-list";
 
-    let mut lore_api_client = MockBlockingLoreAPIClient::new();
+    let mut lore_api_client = MockPatchFeedRequest::new();
 
     lore_api_client
         .expect_request_patch_feed()

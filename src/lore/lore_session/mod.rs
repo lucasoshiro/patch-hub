@@ -66,9 +66,9 @@ impl LoreSession {
         self.processed_patches_map.get(message_id)
     }
 
-    pub fn process_n_representative_patches<T: PatchFeedRequest>(
+    pub fn process_n_representative_patches(
         &mut self,
-        lore_api_client: &T,
+        lore_api_client: &dyn PatchFeedRequest,
         n: usize,
     ) -> Result<(), LoreSessionError> {
         while self.representative_patches_ids.len() < n {
