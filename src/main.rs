@@ -45,3 +45,22 @@ fn main() -> color_eyre::Result<()> {
 
     Ok(())
 }
+
+/// This setup must be done so no test can install the default hooks (when reaching a bail!, for example)
+/// before we setup our custom hooks.
+#[cfg(test)]
+mod test_setup {
+    use once_cell::sync::Lazy;
+
+    use crate::infrastructure::errors::install_hooks;
+
+    static INIT_HOOKS: Lazy<()> = Lazy::new(|| {
+        install_hooks().expect("Failed to install hooks");
+    });
+
+    // This will run before any other test and assure the hooks are installed once
+    #[ctor::ctor]
+    fn init() {
+        Lazy::force(&INIT_HOOKS);
+    }
+}

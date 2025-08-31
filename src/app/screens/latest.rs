@@ -174,36 +174,31 @@ mod tests {
         assert_eq!(latest_patchsets.processed_patchsets_count(), 0);
     }
 
-    // this test cannot be uncommented for now because it affects other unrelated tests
-    // TODO: fix this
-    // #[test]
-    // fn test_fetch_current_page_client_error() {
-    //     let mut lore_api_client = MockPatchFeedRequest::new();
-    //     let target_list = "some-list";
+    #[test]
+    fn test_fetch_current_page_client_error() {
+        let mut lore_api_client = MockPatchFeedRequest::new();
+        let target_list = "some-list";
 
-    //     lore_api_client
-    //         .expect_request_patch_feed()
-    //         .withf(move |target_list_arg, min_index_arg| {
-    //             target_list_arg == target_list && *min_index_arg == 0
-    //         })
-    //         .times(1)
-    //         .returning(move |_, _| Err(ClientError::FromUreq(ureq::Error::StatusCode(401))));
+        lore_api_client
+            .expect_request_patch_feed()
+            .withf(move |target_list_arg, min_index_arg| {
+                target_list_arg == target_list && *min_index_arg == 0
+            })
+            .times(1)
+            .returning(move |_, _| Err(ClientError::FromUreq(ureq::Error::StatusCode(401))));
 
-    //     let mut latest_patchsets = LatestPatchsets::new(
-    //         target_list.to_string(),
-    //         0,
-    //         Box::new(lore_api_client),
-    //     );
-    //     latest_patchsets.page_size = 1;
-    //     latest_patchsets.page_number = 1;
+        let mut latest_patchsets =
+            LatestPatchsets::new(target_list.to_string(), 0, Box::new(lore_api_client));
+        latest_patchsets.page_size = 1;
+        latest_patchsets.page_number = 1;
 
-    //     let fetch_result = latest_patchsets.fetch_current_page();
+        let fetch_result = latest_patchsets.fetch_current_page();
 
-    //     assert!(fetch_result.is_err());
-    //     assert_eq!(latest_patchsets.patchset_index, 0);
+        assert!(fetch_result.is_err());
+        assert_eq!(latest_patchsets.patchset_index, 0);
 
-    //     assert_eq!(latest_patchsets.processed_patchsets_count(), 0);
-    // }
+        assert_eq!(latest_patchsets.processed_patchsets_count(), 0);
+    }
 
     #[test]
     fn test_select_below_patchset() {

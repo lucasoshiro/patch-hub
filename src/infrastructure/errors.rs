@@ -29,28 +29,10 @@ pub fn install_hooks() -> color_eyre::Result<()> {
 
 #[cfg(test)]
 mod tests {
-    use std::sync::Once;
-
     use super::*;
-
-    static INIT: Once = Once::new();
-
-    // Tests can be run in parallel, we don't want to override previously installed hooks
-    fn setup() {
-        INIT.call_once(|| {
-            install_hooks().expect("Failed to install hooks");
-        })
-    }
-
-    #[test]
-    fn test_install_hooks() {
-        setup();
-    }
 
     #[test]
     fn test_error_hook_works() {
-        setup();
-
         let result: color_eyre::Result<()> = Err(color_eyre::eyre::eyre!("Test error"));
 
         // We can't directly test the hook's formatting, but we can verify
@@ -65,8 +47,6 @@ mod tests {
 
     #[test]
     fn test_panic_hook() {
-        setup();
-
         let result = std::panic::catch_unwind(|| std::panic!("Test panic"));
 
         assert!(result.is_err());
